@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import clsx from "clsx";
 
 type Props = {
   label: string;
@@ -12,6 +11,10 @@ type Props = {
 };
 
 export function OddsButton({ label, odds, trend = "none", selected, onClick }: Props) {
+  const baseClasses = "rounded-xl px-3 py-2 text-xs md:text-sm font-semibold transition-colors border border-cyan-500/30 bg-slate-900/60 backdrop-blur-sm hover:border-cyan-400 hover:bg-slate-900";
+  const selectedClasses = selected ? "bg-neon-cyan text-slate-950 border-neon-cyan" : "";
+  const className = `${baseClasses} ${selectedClasses}`.trim();
+
   return (
     <motion.button
       onClick={onClick}
@@ -23,12 +26,7 @@ export function OddsButton({ label, odds, trend = "none", selected, onClick }: P
           ? { boxShadow: "0 0 20px rgba(239,68,68,0.8)" }
           : { boxShadow: "0 0 0 rgba(0,0,0,0)" }
       }
-      className={clsx(
-        "rounded-xl px-3 py-2 text-xs md:text-sm font-semibold transition-colors",
-        "border border-cyan-500/30 bg-slate-900/60 backdrop-blur-sm",
-        "hover:border-cyan-400 hover:bg-slate-900",
-        selected && "bg-neon-cyan text-slate-950 border-neon-cyan"
-      )}
+      className={className}
     >
       <span className="mr-2 text-slate-300">{label}</span>
       <span className="text-neon-cyan">{odds.toFixed(2)}</span>

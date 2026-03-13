@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import io, { Socket } from "socket.io-client";
+import { useState } from "react";
 import { OddsButton } from "../bets/OddsButton";
 
 type LiveMatch = {
@@ -14,55 +13,32 @@ type LiveMatch = {
   period?: string;
 };
 
-let socket: Socket | null = null;
-
-function getSocket() {
-  if (!socket) {
-    const url =
-      process.env.NEXT_PUBLIC_REALTIME_URL || "http://localhost:8080";
-    socket = io(url, {
-      path: "/socket.io/",
-      transports: ["websocket"],
-    });
-  }
-  return socket;
-}
+const MOCK_MATCHES: LiveMatch[] = [
+  {
+    id: 1,
+    home_score: 2,
+    away_score: 1,
+    status: "live",
+    period: "2H",
+  },
+  {
+    id: 2,
+    home_score: 0,
+    away_score: 0,
+    status: "scheduled",
+    period: "-",
+  },
+  {
+    id: 3,
+    home_score: 3,
+    away_score: 2,
+    status: "finished",
+    period: "FT",
+  },
+];
 
 export function LiveRail() {
-  const [matches, setMatches] = useState<LiveMatch[]>([
-    {
-      id: 1,
-      home_score: 0,
-      away_score: 0,
-      status: "scheduled",
-      period: "FT",
-    },
-  ]);
-
-  useEffect(() => {
-    const s = getSocket();
-    s.emit("join_match", 1);
-
-    s.on("match:update", (payload: any) => {
-      setMatches((prev) =>
-        prev.map((m) =>
-          m.id === payload.matchId
-            ? {
-                ...m,
-                home_score: payload.homeScore,
-                away_score: payload.awayScore,
-                status: payload.status,
-                period: payload.period,
-              }
-            : m
-        )
-      );
-    });
-
-    return () => {
-      s.off("match:update");
-    };
-  }, []);
+  const [matches] = useState<LiveMatch[]>(MOCK_MATCHES);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
